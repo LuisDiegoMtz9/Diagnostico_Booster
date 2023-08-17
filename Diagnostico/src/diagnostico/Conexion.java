@@ -21,10 +21,12 @@ public class Conexion {
             // Obtener la conexión
             conexion = DriverManager.getConnection(URL, USUARIO, CONTRASENA);
             System.out.println("Conexión establecida correctamente.");
+             return conexion;
         } catch (ClassNotFoundException | SQLException e) {
             System.err.println("Error al establecer la conexión: " + e.getMessage());
+            return null;
         }
-        return conexion;
+       
     }
 
     public static void cerrarConexion(Connection conexion) {
