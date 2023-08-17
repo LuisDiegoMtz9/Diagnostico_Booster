@@ -4,7 +4,13 @@
  */
 package diagnostico;
 
+import com.mysql.cj.xdevapi.Statement;
 import com.mysql.jdbc.Connection;
+import java.sql.SQLException;
+import javax.swing.ButtonGroup;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+
 
 /**
  *
@@ -13,11 +19,12 @@ import com.mysql.jdbc.Connection;
 
 public class Frame extends javax.swing.JFrame {
  
-    /**
-     * Creates new form Frame
-     */
     public Frame() {
         initComponents();
+        setLocationRelativeTo(null);
+      
+        
+      
     }
 
     /**
@@ -36,9 +43,9 @@ public class Frame extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         txtDescripccion = new javax.swing.JTextField();
-        jRadioButton1 = new javax.swing.JRadioButton();
-        jRadioButton2 = new javax.swing.JRadioButton();
-        jRadioButton3 = new javax.swing.JRadioButton();
+        rdPendiente = new javax.swing.JRadioButton();
+        rdProceso = new javax.swing.JRadioButton();
+        rdCompletado = new javax.swing.JRadioButton();
         btnGuardar = new javax.swing.JButton();
         btnActualizar = new javax.swing.JButton();
         btnEliminar = new javax.swing.JButton();
@@ -81,13 +88,18 @@ public class Frame extends javax.swing.JFrame {
 
         jLabel3.setText("Estado");
 
-        jRadioButton1.setText("Pendiente");
+        rdPendiente.setText("Pendiente");
 
-        jRadioButton2.setText("En proceso");
+        rdProceso.setText("En proceso");
 
-        jRadioButton3.setText("Completado");
+        rdCompletado.setText("Completado");
 
         btnGuardar.setText("Guardar");
+        btnGuardar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnGuardarActionPerformed(evt);
+            }
+        });
 
         btnActualizar.setText("Actualizar");
 
@@ -116,11 +128,11 @@ public class Frame extends javax.swing.JFrame {
                                 .addComponent(jLabel1)
                                 .addGap(0, 0, Short.MAX_VALUE))))
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jRadioButton1)
+                        .addComponent(rdPendiente)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jRadioButton2)
+                        .addComponent(rdProceso)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jRadioButton3))
+                        .addComponent(rdCompletado))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                             .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
@@ -151,9 +163,9 @@ public class Frame extends javax.swing.JFrame {
                 .addComponent(jLabel3)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jRadioButton1)
-                    .addComponent(jRadioButton2)
-                    .addComponent(jRadioButton3))
+                    .addComponent(rdPendiente)
+                    .addComponent(rdProceso)
+                    .addComponent(rdCompletado))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnGuardar)
@@ -200,9 +212,38 @@ public class Frame extends javax.swing.JFrame {
          
     }//GEN-LAST:event_btnCerrarActionPerformed
 
-    /**
-     * @param args the command line arguments
-     */
+    private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
+        // TODO add your handling code here:
+        String descripccion=txtDescripccion.getText();
+        String estado;
+        if (rdCompletado.isSelected()==true) {
+            estado="Completado";
+        }else if (rdProceso.isSelected()==true) {
+            estado="En Proceso";
+        }else if (rdPendiente.isSelected()==true) {
+            estado="Pendiente";
+        }else {
+            JOptionPane.showMessageDialog(null, "Debe ingresar el estado de la tarea");
+            return;
+        }
+        if (descripccion.isEmpty()){
+             JOptionPane.showMessageDialog(null, "Debe ingresar una descripcción");
+            return;
+        }  
+        try {
+            java.sql.Connection con = Conexion.obtenerConexion();
+            java.sql.PreparedStatement ps =con.prepareStatement("INSERT INTO Tareas (Descripcion, Estado) VALUES (?,?)");
+            ps.setString(1, descripccion);
+            ps.setString(2, estado);
+            ps.executeUpdate();
+            JOptionPane.showMessageDialog(null, "Registro guardado");
+        }catch(SQLException e){
+            JOptionPane.showMessageDialog(null, e.toString());
+           
+        }
+    }//GEN-LAST:event_btnGuardarActionPerformed
+
+
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
@@ -245,10 +286,10 @@ public class Frame extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JRadioButton jRadioButton1;
-    private javax.swing.JRadioButton jRadioButton2;
-    private javax.swing.JRadioButton jRadioButton3;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JRadioButton rdCompletado;
+    private javax.swing.JRadioButton rdPendiente;
+    private javax.swing.JRadioButton rdProceso;
     private javax.swing.JTable tbTareas;
     private javax.swing.JTextField txtDescripccion;
     // End of variables declaration//GEN-END:variables
