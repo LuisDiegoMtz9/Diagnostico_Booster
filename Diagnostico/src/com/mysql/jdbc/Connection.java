@@ -4,10 +4,16 @@
  */
 package com.mysql.jdbc;
 
+import java.sql.PreparedStatement;
+
 /**
  *
  * @author Luis
  */
 public class Connection {
+
+    public PreparedStatement prepareStatement(String select__from_Tareas) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
     
 }

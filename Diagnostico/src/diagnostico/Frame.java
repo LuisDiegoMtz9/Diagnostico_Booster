@@ -4,6 +4,7 @@
  */
 package diagnostico;
 
+import com.mysql.cj.jdbc.PreparedStatementWrapper;
 import com.mysql.cj.xdevapi.Statement;
 import com.mysql.jdbc.Connection;
 import java.sql.SQLException;
@@ -11,20 +12,22 @@ import javax.swing.ButtonGroup;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
-
 /**
  *
  * @author Luis
  */
-
 public class Frame extends javax.swing.JFrame {
- 
+
+    ButtonGroup btnGr;
+
     public Frame() {
         initComponents();
         setLocationRelativeTo(null);
-      
-        
-      
+        txtid.setVisible(false);
+        btnGr = new ButtonGroup();
+        btnGr.add(rdCompletado);
+        btnGr.add(rdPendiente);
+        btnGr.add(rdProceso);
     }
 
     /**
@@ -49,8 +52,8 @@ public class Frame extends javax.swing.JFrame {
         btnGuardar = new javax.swing.JButton();
         btnActualizar = new javax.swing.JButton();
         btnEliminar = new javax.swing.JButton();
+        txtid = new javax.swing.JTextField();
         btnMostrar = new javax.swing.JButton();
-        btnCerrar = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -71,6 +74,11 @@ public class Frame extends javax.swing.JFrame {
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
                 return canEdit [columnIndex];
+            }
+        });
+        tbTareas.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tbTareasMouseClicked(evt);
             }
         });
         jScrollPane1.setViewportView(tbTareas);
@@ -102,15 +110,23 @@ public class Frame extends javax.swing.JFrame {
         });
 
         btnActualizar.setText("Actualizar");
+        btnActualizar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnActualizarActionPerformed(evt);
+            }
+        });
 
         btnEliminar.setText("Eliminar");
+        btnEliminar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEliminarActionPerformed(evt);
+            }
+        });
 
         btnMostrar.setText("Mostrar");
-
-        btnCerrar.setText("Cerrar Conexion");
-        btnCerrar.addActionListener(new java.awt.event.ActionListener() {
+        btnMostrar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnCerrarActionPerformed(evt);
+                btnMostrarActionPerformed(evt);
             }
         });
 
@@ -126,7 +142,9 @@ public class Frame extends javax.swing.JFrame {
                             .addComponent(txtDescripccion)
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addComponent(jLabel1)
-                                .addGap(0, 0, Short.MAX_VALUE))))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(txtid, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(53, 53, 53))))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(rdPendiente)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -134,29 +152,29 @@ public class Frame extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(rdCompletado))
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
-                                .addContainerGap()
-                                .addComponent(btnMostrar, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(btnCerrar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(jLabel3)
-                                .addGroup(jPanel1Layout.createSequentialGroup()
-                                    .addContainerGap()
-                                    .addComponent(btnGuardar)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                    .addComponent(btnActualizar)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                    .addComponent(btnEliminar))))
+                        .addGap(23, 23, 23)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel3)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(btnGuardar)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btnActualizar)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btnEliminar)))
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(52, 52, 52)
+                .addComponent(btnMostrar, javax.swing.GroupLayout.PREFERRED_SIZE, 157, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel1)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(txtid, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(txtDescripccion, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -172,9 +190,7 @@ public class Frame extends javax.swing.JFrame {
                     .addComponent(btnActualizar)
                     .addComponent(btnEliminar))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnMostrar)
-                    .addComponent(btnCerrar))
+                .addComponent(btnMostrar)
                 .addContainerGap(17, Short.MAX_VALUE))
         );
 
@@ -207,42 +223,154 @@ public class Frame extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void btnCerrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCerrarActionPerformed
-        // TODO add your handling code here:
-         
-    }//GEN-LAST:event_btnCerrarActionPerformed
-
     private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
         // TODO add your handling code here:
-        String descripccion=txtDescripccion.getText();
+        String descripccion = txtDescripccion.getText();
         String estado;
-        if (rdCompletado.isSelected()==true) {
-            estado="Completado";
-        }else if (rdProceso.isSelected()==true) {
-            estado="En Proceso";
-        }else if (rdPendiente.isSelected()==true) {
-            estado="Pendiente";
-        }else {
+        if (rdCompletado.isSelected() == true) {
+            estado = "Completada";
+        } else if (rdProceso.isSelected() == true) {
+            estado = "En Proceso";
+        } else if (rdPendiente.isSelected() == true) {
+            estado = "Pendiente";
+        } else {
             JOptionPane.showMessageDialog(null, "Debe ingresar el estado de la tarea");
             return;
         }
-        if (descripccion.isEmpty()){
-             JOptionPane.showMessageDialog(null, "Debe ingresar una descripcción");
+        if (descripccion.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Debe ingresar una descripcción");
             return;
-        }  
+        }
         try {
             java.sql.Connection con = Conexion.obtenerConexion();
-            java.sql.PreparedStatement ps =con.prepareStatement("INSERT INTO Tareas (Descripcion, Estado) VALUES (?,?)");
+            java.sql.PreparedStatement ps = con.prepareStatement("INSERT INTO Tareas (Descripcion, Estado) VALUES (?,?)");
             ps.setString(1, descripccion);
             ps.setString(2, estado);
             ps.executeUpdate();
             JOptionPane.showMessageDialog(null, "Registro guardado");
-        }catch(SQLException e){
+            limpiar();
+        } catch (SQLException e) {
             JOptionPane.showMessageDialog(null, e.toString());
-           
+
         }
     }//GEN-LAST:event_btnGuardarActionPerformed
 
+    private void tbTareasMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tbTareasMouseClicked
+        // TODO add your handling code here:
+        try {
+            int fila = tbTareas.getSelectedRow();
+            java.sql.ResultSet rs;
+            java.sql.Connection con = Conexion.obtenerConexion();
+            int id = Integer.parseInt(tbTareas.getValueAt(fila, 0).toString());
+            java.sql.PreparedStatement ps = con.prepareStatement("SELECT * FROM Tareas WHERE ID=?");
+            ps.setInt(1, id);
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                txtid.setText(String.valueOf(id));
+                txtDescripccion.setText(rs.getString("Descripcion"));
+                if (rs.getString("Estado").equals("Pendiente")) {
+                    rdPendiente.setSelected(true);
+                } else if (rs.getString("Estado").equals("En Proceso")) {
+                    rdProceso.setSelected(true);
+                } else if (rs.getString("Estado").equals("Completada")) {
+                    rdCompletado.setSelected(true);
+                }
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, e.toString());
+        }
+    }//GEN-LAST:event_tbTareasMouseClicked
+
+    private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
+        String idText = txtid.getText();
+        if (idText.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Debe seleccionar una fila para eliminar.");
+            return;
+        }
+
+        int id = Integer.parseInt(idText);
+        try {
+            java.sql.Connection con = Conexion.obtenerConexion();
+            java.sql.PreparedStatement ps = con.prepareStatement("DELETE FROM Tareas WHERE ID=?");
+            ps.setInt(1, id);
+            ps.executeUpdate();
+            JOptionPane.showMessageDialog(null, "Registro Eliminado");
+            limpiar();
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, e.toString());
+
+        }
+    }//GEN-LAST:event_btnEliminarActionPerformed
+
+    private void btnActualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnActualizarActionPerformed
+        // TODO add your handling code here:
+        String idText = txtid.getText();
+        if (idText.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Debe seleccionar una fila para actualizar.");
+            return;
+        }
+
+        int id = Integer.parseInt(idText);
+        String descripccion = txtDescripccion.getText();
+        String estado;
+        if (rdCompletado.isSelected()) {
+            estado = "Completada";
+        } else if (rdProceso.isSelected()) {
+            estado = "En Proceso";
+        } else if (rdPendiente.isSelected()) {
+            estado = "Pendiente";
+        } else {
+            JOptionPane.showMessageDialog(null, "Debe ingresar el estado de la tarea");
+            return;
+        }
+        if (descripccion.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Debe ingresar una descripción");
+            return;
+        }
+        try {
+            java.sql.Connection con = Conexion.obtenerConexion();
+            java.sql.PreparedStatement ps = con.prepareStatement("UPDATE Tareas SET Descripcion=?, Estado=? WHERE ID=?");
+            ps.setString(1, descripccion);
+            ps.setString(2, estado);
+            ps.setInt(3, id);
+            ps.executeUpdate();
+            JOptionPane.showMessageDialog(null, "Registro Actualizado");
+            limpiar();
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, e.toString());
+
+        }
+    }//GEN-LAST:event_btnActualizarActionPerformed
+
+    private void btnMostrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMostrarActionPerformed
+        DefaultTableModel modelotabla = (DefaultTableModel) tbTareas.getModel();
+        modelotabla.setRowCount(0);
+
+        java.sql.ResultSet rs;
+        java.sql.ResultSetMetaData rsmd;
+        int columnas;
+        try {
+            java.sql.Connection con = Conexion.obtenerConexion(); // Utiliza java.sql.Connection
+            java.sql.PreparedStatement ps = con.prepareStatement("SELECT * FROM Tareas");
+            rs = ps.executeQuery();
+            rsmd = rs.getMetaData();
+            columnas = rsmd.getColumnCount();
+            while (rs.next()) {
+                Object[] fila = new Object[columnas];
+                for (int i = 0; i < columnas; i++) {
+                    fila[i] = rs.getObject(i + 1);
+                }
+                modelotabla.addRow(fila);
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, e.toString());
+        }     // TODO add your handling code here:
+    }//GEN-LAST:event_btnMostrarActionPerformed
+    private void limpiar() {
+        txtid.setText("");
+        txtDescripccion.setText("");
+        btnGr.clearSelection();
+    }
 
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
@@ -276,9 +404,9 @@ public class Frame extends javax.swing.JFrame {
         });
     }
 
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnActualizar;
-    private javax.swing.JButton btnCerrar;
     private javax.swing.JButton btnEliminar;
     private javax.swing.JButton btnGuardar;
     private javax.swing.JButton btnMostrar;
@@ -292,5 +420,6 @@ public class Frame extends javax.swing.JFrame {
     private javax.swing.JRadioButton rdProceso;
     private javax.swing.JTable tbTareas;
     private javax.swing.JTextField txtDescripccion;
+    private javax.swing.JTextField txtid;
     // End of variables declaration//GEN-END:variables
 }
